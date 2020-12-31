@@ -22,6 +22,7 @@ namespace SpriteKind {
 // initializeFlierAnimations()
 function initializeAnimations () {
     initializeHeroAnimations()
+    tiles.setTilemap(tilemap`level_0`)
 }
 function giveIntroduction () {
     game.setDialogFrame(img`
@@ -64,6 +65,25 @@ function giveIntroduction () {
     showInstruction("Jump with the up or A button.")
     showInstruction("Double jump by pressing jump again.")
 }
+
+
+function attemptJump () {
+    // else if: either fell off a ledge, or double jumping
+    if (Al.isHittingTile(CollisionDirection.Bottom)) {
+        Al.vy = -4 * pixelsToMeters
+    } else if (canDoubleJump) {
+        doubleJumpSpeed = -3 * pixelsToMeters
+        // Good double jump
+        if (Al.vy >= -40) {
+            doubleJumpSpeed = -4.5 * pixelsToMeters
+            Al.startEffect(effects.trail, 500)
+            scene.cameraShake(2, 250)
+        }
+        Al.vy = doubleJumpSpeed
+        canDoubleJump = false
+    }
+}
+
 function animateIdle () {
     mainIdleLeft = animation.createAnimation(ActionKind.IdleLeft, 100)
     animation.attachAnimation(Al, mainIdleLeft)
@@ -106,6 +126,11 @@ function animateIdle () {
         . . . . . f f . . f f . . . . . 
         `)
 }
+
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    attemptJump()
+})
+
 function animateRun () {
     mainRunLeft = animation.createAnimation(ActionKind.RunningLeft, 100)
     animation.attachAnimation(Al, mainRunLeft)
@@ -128,23 +153,23 @@ function animateRun () {
         . . . . . f f f f f f . . . . . 
         `)
     mainRunLeft.addAnimationFrame(img`
-        . . . . . f f f f f f . . . . .
-        . . . . . f f f f f f . . . . .
-        . . . . . f f f f f f . . . . .
-        . . . . . 4 4 4 4 4 4 . . . . .
-        . f f f f f f f f f f f f f f .
-        . . . . 4 4 4 4 4 4 4 4 . . . .
-        . . . . d d 4 4 4 4 4 4 . . . .
-        . . . . f d 4 4 4 4 4 4 f . . .
-        . . . . d d 4 4 4 4 4 f f . . .
-        . . . 4 4 e e f f f f f . . . .
-        . . . . . 2 e 4 4 2 2 . . . . .
-        . . . . . 2 2 2 4 4 2 . . . . .
-        . . . . . 4 4 4 4 d d . . . . .
-        . . . . . f f f f f f . . . . .
-        . . . . f f f f f f f . . . . .
-        . . . . f f f f f f . . . . . .
-    `)
+        . . . . . f f f f f f . . . . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . 4 4 4 4 4 4 . . . . . 
+        . f f f f f f f f f f f f f f . 
+        . . . . 4 4 4 4 4 4 4 4 . . . . 
+        . . . . d d 4 4 4 4 4 4 . . . . 
+        . . . . f d 4 4 4 4 4 4 f . . . 
+        . . . . d d 4 4 4 4 4 f f . . . 
+        . . . 4 4 e e f f f f f . . . . 
+        . . . . . 2 e 4 4 2 2 . . . . . 
+        . . . . . 2 2 2 4 4 2 . . . . . 
+        . . . . . 4 4 4 4 d d . . . . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . f f f f f f f . . . . . 
+        . . . . f f f f f f . . . . . . 
+        `)
     mainRunLeft.addAnimationFrame(img`
         . . . . . f f f f f f . . . . . 
         . . . . . f f f f f f . . . . . 
@@ -164,97 +189,97 @@ function animateRun () {
         . . . . . f f f f f f . . . . . 
         `)
     mainRunLeft.addAnimationFrame(img`
-        . . . . . f f f f f f . . . . .
-        . . . . . f f f f f f . . . . .
-        . . . . . f f f f f f . . . . .
-        . . . . . 4 4 4 4 4 4 . . . . .
-        . f f f f f f f f f f f f f f .
-        . . . . 4 4 4 4 4 4 4 4 . . . .
-        . . . . d d 4 4 4 4 4 4 . . . .
-        . . . . f d 4 4 4 4 4 4 f . . .
-        . . . . d d 4 4 4 4 4 f f . . .
-        . . . 4 4 e e f f f f f . . . .
-        . . . . . 2 e 4 4 2 2 . . . . .
-        . . . . . 2 4 4 2 2 2 . . . . .
-        . . . . . d d 4 4 4 4 . . . . .
-        . . . . . f f f f f f . . . . .
-        . . . . . f f f f f f f . . . .
-        . . . . . . f f f f f f . . . .
-    `)
+        . . . . . f f f f f f . . . . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . 4 4 4 4 4 4 . . . . . 
+        . f f f f f f f f f f f f f f . 
+        . . . . 4 4 4 4 4 4 4 4 . . . . 
+        . . . . d d 4 4 4 4 4 4 . . . . 
+        . . . . f d 4 4 4 4 4 4 f . . . 
+        . . . . d d 4 4 4 4 4 f f . . . 
+        . . . 4 4 e e f f f f f . . . . 
+        . . . . . 2 e 4 4 2 2 . . . . . 
+        . . . . . 2 4 4 2 2 2 . . . . . 
+        . . . . . d d 4 4 4 4 . . . . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . f f f f f f f . . . . 
+        . . . . . . f f f f f f . . . . 
+        `)
     mainRunRight = animation.createAnimation(ActionKind.RunningRight, 100)
     animation.attachAnimation(Al, mainRunRight)
     mainRunRight.addAnimationFrame(img`
-        . . . . . f f f f f f . . . . .
-        . . . . . f f f f f f . . . . .
-        . . . . . f f f f f f . . . . .
-        . . . . . 4 4 4 4 4 4 . . . . .
-        . f f f f f f f f f f f f f f .
-        . . . . 4 4 4 4 4 4 4 4 . . . .
-        . . . . 4 4 4 4 4 4 d d . . . .
-        . . . f 4 4 4 4 4 4 d f . . . .
-        . . . f f 4 4 4 4 4 d d . . . .
-        . . . . f f f f f e e 4 4 . . .
-        . . . . . 2 2 4 4 e 2 . . . . .
-        . . . . . 2 2 4 4 2 2 . . . . .
-        . . . . . 4 4 d d 4 4 . . . . .
-        . . . . . f f f f f f . . . . .
-        . . . . . f f f f f f . . . . .
-        . . . . . f f f f f f . . . . .
-    `)
-    mainRunRight.addAnimationFrame(img`
-        . . . . . f f f f f f . . . . .
-        . . . . . f f f f f f . . . . .
-        . . . . . f f f f f f . . . . .
-        . . . . . 4 4 4 4 4 4 . . . . .
-        . f f f f f f f f f f f f f f .
-        . . . . 4 4 4 4 4 4 4 4 . . . .
-        . . . . 4 4 4 4 4 4 d d . . . .
-        . . . f 4 4 4 4 4 4 d f . . . .
-        . . . f f 4 4 4 4 4 d d . . . .
-        . . . . f f f f f e e 4 4 . . .
-        . . . . . 2 2 4 4 e 2 . . . . .
-        . . . . . 2 2 2 4 4 2 . . . . .
-        . . . . . 4 4 4 4 d d . . . . .
-        . . . . . f f f f f f . . . . .
-        . . . . f f f f f f f . . . . .
-        . . . . f f f f f f . . . . . .
-    `)
-    mainRunRight.addAnimationFrame(img`
-        . . . . . f f f f f f . . . . .
-        . . . . . f f f f f f . . . . .
-        . . . . . f f f f f f . . . . .
-        . . . . . 4 4 4 4 4 4 . . . . .
-        . f f f f f f f f f f f f f f .
-        . . . . 4 4 4 4 4 4 4 4 . . . .
-        . . . . 4 4 4 4 4 4 d d . . . .
-        . . . f 4 4 4 4 4 4 d f . . . .
-        . . . f f 4 4 4 4 4 d d . . . .
-        . . . . f f f f f e e 4 4 . . .
-        . . . . . 2 2 4 4 e 2 . . . . .
-        . . . . . 2 2 4 4 2 2 . . . . .
-        . . . . . 4 4 d d 4 4 . . . . .
-        . . . . . f f f f f f . . . . .
-        . . . . . f f f f f f . . . . .
+        . . . . . f f f f f f . . . . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . 4 4 4 4 4 4 . . . . . 
+        . f f f f f f f f f f f f f f . 
+        . . . . 4 4 4 4 4 4 4 4 . . . . 
+        . . . . 4 4 4 4 4 4 d d . . . . 
+        . . . f 4 4 4 4 4 4 d f . . . . 
+        . . . f f 4 4 4 4 4 d d . . . . 
+        . . . . f f f f f e e 4 4 . . . 
+        . . . . . 2 2 4 4 e 2 . . . . . 
+        . . . . . 2 2 4 4 2 2 . . . . . 
+        . . . . . 4 4 d d 4 4 . . . . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . f f f f f f . . . . . 
         . . . . . f f f f f f . . . . . 
         `)
     mainRunRight.addAnimationFrame(img`
-        . . . . . f f f f f f . . . . .
-        . . . . . f f f f f f . . . . .
-        . . . . . f f f f f f . . . . .
-        . . . . . 4 4 4 4 4 4 . . . . .
-        . f f f f f f f f f f f f f f .
-        . . . . 4 4 4 4 4 4 4 4 . . . .
-        . . . . 4 4 4 4 4 4 d d . . . .
-        . . . f 4 4 4 4 4 4 d f . . . .
-        . . . f f 4 4 4 4 4 d d . . . .
-        . . . . f f f f f e e 4 4 . . .
-        . . . . . 2 2 4 4 e 2 . . . . .
-        . . . . . 2 4 4 1 2 2 . . . . .
-        . . . . . d d 4 4 4 4 . . . . .
-        . . . . . f f f f f f . . . . .
-        . . . . . f f f f f f f . . . .
-        . . . . . . f f f f f f . . . .
-    `)
+        . . . . . f f f f f f . . . . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . 4 4 4 4 4 4 . . . . . 
+        . f f f f f f f f f f f f f f . 
+        . . . . 4 4 4 4 4 4 4 4 . . . . 
+        . . . . 4 4 4 4 4 4 d d . . . . 
+        . . . f 4 4 4 4 4 4 d f . . . . 
+        . . . f f 4 4 4 4 4 d d . . . . 
+        . . . . f f f f f e e 4 4 . . . 
+        . . . . . 2 2 4 4 e 2 . . . . . 
+        . . . . . 2 2 2 4 4 2 . . . . . 
+        . . . . . 4 4 4 4 d d . . . . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . f f f f f f f . . . . . 
+        . . . . f f f f f f . . . . . . 
+        `)
+    mainRunRight.addAnimationFrame(img`
+        . . . . . f f f f f f . . . . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . 4 4 4 4 4 4 . . . . . 
+        . f f f f f f f f f f f f f f . 
+        . . . . 4 4 4 4 4 4 4 4 . . . . 
+        . . . . 4 4 4 4 4 4 d d . . . . 
+        . . . f 4 4 4 4 4 4 d f . . . . 
+        . . . f f 4 4 4 4 4 d d . . . . 
+        . . . . f f f f f e e 4 4 . . . 
+        . . . . . 2 2 4 4 e 2 . . . . . 
+        . . . . . 2 2 4 4 2 2 . . . . . 
+        . . . . . 4 4 d d 4 4 . . . . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . f f f f f f . . . . . 
+        `)
+    mainRunRight.addAnimationFrame(img`
+        . . . . . f f f f f f . . . . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . 4 4 4 4 4 4 . . . . . 
+        . f f f f f f f f f f f f f f . 
+        . . . . 4 4 4 4 4 4 4 4 . . . . 
+        . . . . 4 4 4 4 4 4 d d . . . . 
+        . . . f 4 4 4 4 4 4 d f . . . . 
+        . . . f f 4 4 4 4 4 d d . . . . 
+        . . . . f f f f f e e 4 4 . . . 
+        . . . . . 2 2 4 4 e 2 . . . . . 
+        . . . . . 2 4 4 1 2 2 . . . . . 
+        . . . . . d d 4 4 4 4 . . . . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . f f f f f f f . . . . 
+        . . . . . . f f f f f f . . . . 
+        `)
 }
 function animateJumps () {
     // Because there isn't currently an easy way to say "play this animation a single time
@@ -263,117 +288,117 @@ function animateJumps () {
     mainJumpLeft = animation.createAnimation(ActionKind.JumpingLeft, 100)
     animation.attachAnimation(Al, mainJumpLeft)
     mainJumpLeft.addAnimationFrame(img`
-        . . . . . . . . . . . . . . . . 
-        . . . f f f f f f f f f f . . . 
-        . . f e e e e e e e e e e f . . 
-        . f e e e e e e e e e e e e f . 
-        . f d d d d d d d d d e e d f . 
-        . f d d f d d d d f d d e d f . 
-        . f d d f d d d d f d d d e f . 
-        . f d d f d d d d f d d d f . . 
-        . f d d d d d d d d d d d f . . 
-        . f a c c c c c c c c a b f . . 
-        . f d d c c c c c c d d d f . . 
-        . f d f f f b b f f f d d f . . 
-        . . f a a a a a a a a a b f . . 
-        . . . f a a b f f a a b f . . . 
-        . . . f a a b f f a a b f . . . 
-        . . . . f f f . . f f f . . . . 
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . f f f f f f . . . . .
+        . . . . . f f f f f f . . . . .
+        . . . . . 4 4 4 4 4 4 . . . . .
+        . f f f f f f f f f f f f f f .
+        . . . . 4 4 4 4 4 4 4 4 . . . .
+        . . . . 4 d d d d d d 4 . . . .
+        . f f e f d f d d f d f e f f .
+        . f f e 4 d f d d f d 4 e e f .
+        . . . f e e 4 4 4 4 e e f . . .
+        . . 4 d f 2 2 2 2 2 2 f d 4 . .
+        . . 4 4 f 4 4 5 5 4 4 f 4 4 . .
+        . . . . . f f . . f f . . . . . 
         `)
     mainJumpLeft.addAnimationFrame(img`
-        . . . . . . . . . . . . . . . . 
-        . . . f f f f f f f f f f . . . 
-        . . f e e e e e e e e e e f . . 
-        . f e e e e e e e e e e e e f . 
-        . f d d d d d d d d d e e d f . 
-        . f d d f d d d d f d d e d f . 
-        . f d d f d d d d f d d d e f . 
-        . f d d f d d d d f d d d f . . 
-        . f d d d d d d d d d d d f . . 
-        . f a c c c c c c c c a b f . . 
-        . f d d c c c c c c d d d f . . 
-        . f d f f f b b f f f d d f . . 
-        . . f a a a a a a a a a b f . . 
-        . . . f a a b f f a a b f . . . 
-        . . . . f f f . . f f f . . . . 
-        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . f f f f f f . . . . .
+        . . . . . f f f f f f . . . . .
+        . . . . . 4 4 4 4 4 4 . . . . .
+        . f f f f f f f f f f f f f f .
+        . . . . 4 4 4 4 4 4 4 4 . . . .
+        . . . . 4 d d d d d d 4 . . . .
+        . f f e f d f d d f d f e f f .
+        . f f e 4 d f d d f d 4 e e f .
+        . . . f e e 4 4 4 4 e e f . . .
+        . . 4 d f 2 2 2 2 2 2 f d 4 . .
+        . . 4 4 f 4 4 5 5 4 4 f 4 4 . .
+        . . . . . f f . . f f . . . . . 
         `)
     for (let index = 0; index < 30; index++) {
         mainJumpLeft.addAnimationFrame(img`
-            . . . . . . . . . . . . . . . . 
-            . . . f f f f f f f f f f . . . 
-            . . f e e e e e e e e e e f . . 
-            . f e e e e e e e e e e e e f . 
-            . f d d d d d d d d d e e d f . 
-            . f d d f d d d d f d d e d f . 
-            . f d d f d d d d f d d d e f . 
-            . f d d f d d d d f d d d f . . 
-            . f d d d d d d d d d d d f f . 
-            . d a b c c c c c c c c b a d . 
-            . d a c c c c c c c c c c a d . 
-            . f f f f f b b f f f f f f f . 
-            . . f a a a a a a a a a b f . . 
-            . . . f a a b f f a a b f . . . 
-            . . . . f f f . . f f f . . . . 
-            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . f f f f f f . . . . .
+        . . . . . f f f f f f . . . . .
+        . . . . . 4 4 4 4 4 4 . . . . .
+        . f f f f f f f f f f f f f f .
+        . . . . 4 4 4 4 4 4 4 4 . . . .
+        . . . . 4 d d d d d d 4 . . . .
+        . f f e f d f d d f d f e f f .
+        . f f e 4 d f d d f d 4 e e f .
+        . . . f e e 4 4 4 4 e e f . . .
+        . . 4 d f 2 2 2 2 2 2 f d 4 . .
+        . . 4 4 f 4 4 5 5 4 4 f 4 4 . .
+        . . . . . f f . . f f . . . . . 
             `)
     }
     mainJumpRight = animation.createAnimation(ActionKind.JumpingRight, 100)
     animation.attachAnimation(Al, mainJumpRight)
     mainJumpRight.addAnimationFrame(img`
-        . . . . . . . . . . . . . . . . 
-        . . . f f f f f f f f f f . . . 
-        . . f e e e e e e e e e e f . . 
-        . f e e e e e e e e e e e e f . 
-        . f d e e d d d d d d d d d f . 
-        . f d e d d f d d d d f d d f . 
-        . f e d d d f d d d d f d d f . 
-        . . f d d d f d d d d f d d f . 
-        . . f d d d d d d d d d d d f . 
-        . . f b a c c c c c c c c a f . 
-        . . f d d d c c c c c c d d f . 
-        . . f d d f f f b b f f f d f . 
-        . . f b a a a a a a a a a f . . 
-        . . . f b a a f f b a a f . . . 
-        . . . f b a a f f b a a f . . . 
-        . . . . f f f . . f f f . . . . 
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . f f f f f f . . . . .
+        . . . . . f f f f f f . . . . .
+        . . . . . 4 4 4 4 4 4 . . . . .
+        . f f f f f f f f f f f f f f .
+        . . . . 4 4 4 4 4 4 4 4 . . . .
+        . . . . 4 d d d d d d 4 . . . .
+        . f f e f d f d d f d f e f f .
+        . f f e 4 d f d d f d 4 e e f .
+        . . . f e e 4 4 4 4 e e f . . .
+        . . 4 d f 2 2 2 2 2 2 f d 4 . .
+        . . 4 4 f 4 4 5 5 4 4 f 4 4 . .
+        . . . . . f f . . f f . . . . . 
         `)
     mainJumpRight.addAnimationFrame(img`
-        . . . . . . . . . . . . . . . . 
-        . . . f f f f f f f f f f . . . 
-        . . f e e e e e e e e e e f . . 
-        . f e e e e e e e e e e e e f . 
-        . f d e e d d d d d d d d d f . 
-        . f d e d d f d d d d f d d f . 
-        . f e d d d f d d d d f d d f . 
-        . . f d d d f d d d d f d d f . 
-        . . f d d d d d d d d d d d f . 
-        . . f b a c c c c c c c c a f . 
-        . . f d d d c c c c c c d d f . 
-        . . f d d f f f b b f f f d f . 
-        . . f b a a a a a a a a a f . . 
-        . . . f b a a f f b a a f . . . 
-        . . . . f f f . . f f f . . . . 
-        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . f f f f f f . . . . .
+        . . . . . f f f f f f . . . . .
+        . . . . . 4 4 4 4 4 4 . . . . .
+        . f f f f f f f f f f f f f f .
+        . . . . 4 4 4 4 4 4 4 4 . . . .
+        . . . . 4 d d d d d d 4 . . . .
+        . f f e f d f d d f d f e f f .
+        . f f e 4 d f d d f d 4 e e f .
+        . . . f e e 4 4 4 4 e e f . . .
+        . . 4 d f 2 2 2 2 2 2 f d 4 . .
+        . . 4 4 f 4 4 5 5 4 4 f 4 4 . .
+        . . . . . f f . . f f . . . . . 
         `)
     for (let index = 0; index < 30; index++) {
         mainJumpRight.addAnimationFrame(img`
-            . . . . . . . . . . . . . . . . 
-            . . . f f f f f f f f f f . . . 
-            . . f e e e e e e e e e e f . . 
-            . f e e e e e e e e e e e e f . 
-            . f d e e d d d d d d d d d f . 
-            . f d e d d f d d d d f d d f . 
-            . f e d d d f d d d d f d d f . 
-            . . f d d d f d d d d f d d f . 
-            . f f d d d d d d d d d d d f . 
-            . d a b c c c c c c c c b a d . 
-            . d a c c c c c c c c c c a d . 
-            . f f f f f f f b b f f f f f . 
-            . . f b a a a a a a a a a f . . 
-            . . . f b a a f f b a a f . . . 
-            . . . . f f f . . f f f . . . . 
-            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . f f f f f f . . . . .
+        . . . . . f f f f f f . . . . .
+        . . . . . 4 4 4 4 4 4 . . . . .
+        . f f f f f f f f f f f f f f .
+        . . . . 4 4 4 4 4 4 4 4 . . . .
+        . . . . 4 d d d d d d 4 . . . .
+        . f f e f d f d d f d f e f f .
+        . f f e 4 d f d d f d 4 e e f .
+        . . . f e e 4 4 4 4 e e f . . .
+        . . 4 d f 2 2 2 2 2 2 f d 4 . .
+        . . 4 4 f 4 4 5 5 4 4 f 4 4 . .
+        . . . . . f f . . f f . . . . . 
             `)
     }
 }
@@ -381,42 +406,42 @@ function animateCrouch () {
     mainCrouchLeft = animation.createAnimation(ActionKind.CrouchLeft, 100)
     animation.attachAnimation(Al, mainCrouchLeft)
     mainCrouchLeft.addAnimationFrame(img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . f f f f f f f f f f . . . 
-        . . f e e e e e e e e e e f . . 
-        . f e e e e e e e e e e e e f . 
-        . f d d d d d d d d d e e d f . 
-        . f d d f d d d d f d d e d f . 
-        . f d d f d d d d f d d d e f . 
-        . f d d f d d d d f d d d f . . 
-        . f d d d d d d d d d d d f . . 
-        . f a c c c c c c c c a b f . . 
-        . f d c c c c c c c c c d d f . 
-        f d d f f f b b f f f f d d f . 
-        . f f a a a a a a a a a b f . . 
-        . . . f f f f . f f f f f . . . 
-        `)
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . f f f f f f . . . . .
+        . . . . . f f f f f f . . . . .
+        . . . . . 4 4 4 4 4 4 . . . . .
+        . f f f f f f f f f f f f f f .
+        . . . . 4 4 4 4 4 4 4 4 . . . .
+        . . . . 4 d d d d d d 4 . . . .
+        . f f e f d f d d f d f e f f .
+        . f f e 4 d f d d f d 4 e e f .
+        . . . f e e 4 4 4 4 e e f . . .
+        . . 4 d f 2 2 2 2 2 2 f d 4 . .
+        . . 4 4 f 4 4 5 5 4 4 f 4 4 . .
+        . . . . . f f . . f f . . . . .
+    `)
     mainCrouchRight = animation.createAnimation(ActionKind.CrouchRight, 100)
     animation.attachAnimation(Al, mainCrouchRight)
     mainCrouchRight.addAnimationFrame(img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . f f f f f f f f f f . . . 
-        . . f e e e e e e e e e e f . . 
-        . f e e e e e e e e e e e e f . 
-        . f d e e d d d d d d d d d f . 
-        . f d e d d f d d d d f d d f . 
-        . f e d d d f d d d d f d d f . 
-        . . f d d d f d d d d f d d f . 
-        . . f d d d d d d d d d d d f . 
-        . . f b a c c c c c c c c a f . 
-        . f d d c c c c c c c c c d f . 
-        . f d d f f f f b b f f f d d f 
-        . . f b a a a a a a a a a f f . 
-        . . . f f f f f . f f f f . . . 
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . f f f f f f . . . . .
+        . . . . . f f f f f f . . . . .
+        . . . . . 4 4 4 4 4 4 . . . . .
+        . f f f f f f f f f f f f f f .
+        . . . . 4 4 4 4 4 4 4 4 . . . .
+        . . . . 4 d d d d d d 4 . . . .
+        . f f e f d f d d f d f e f f .
+        . f f e 4 d f d d f d 4 e e f .
+        . . . f e e 4 4 4 4 e e f . . .
+        . . 4 d f 2 2 2 2 2 2 f d 4 . .
+        . . 4 4 f 4 4 5 5 4 4 f 4 4 . .
+        . . . . . f f . . f f . . . . . 
         `)
 }
 function showInstruction (text: string) {
@@ -435,6 +460,7 @@ function createPlayer (player2: Sprite) {
     scene.cameraFollowSprite(player2)
     controller.moveSprite(player2, 100, 0)
     player2.z = 5
+    player2.setPosition(10, scene.screenHeight() - 50)
     info.setLife(3)
     info.setScore(0)
 }
@@ -447,6 +473,11 @@ function initializeLevel (level: number) {
     // playerStartLocation = tiles.getTilesByType(myTiles.tile6)[0]
     tiles.placeOnTile(Al, playerStartLocation)
 }
+
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    attemptJump()
+})
+
 let heroFacingLeft = false
 let mainCrouchRight: animation.Animation = null
 let mainCrouchLeft: animation.Animation = null
@@ -468,6 +499,7 @@ let levelCount = 0
 let currentLevel = 0
 let doubleJumpSpeed = 0
 let hero = null
+let mySprite = null
 let canDoubleJump = true
 scene.setBackgroundImage(img`
     9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
